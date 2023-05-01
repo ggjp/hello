@@ -14,9 +14,7 @@ result_list2 = [
 result_list2_dict = {(item["store_code"], item["product_code"]): item for item in result_list2}
 
 # result_list2のすべてのキーを取得（重複を除く）
-all_keys = set()
-for item in result_list2:
-    all_keys.update(item.keys())
+all_keys = set(result_list2[0].keys()) if result_list2 else set()
 
 # result_list1のアイテムをベースにresult_list2の一致する商品コードと店舗コードから他の項目を取得
 new_result_list = []
@@ -25,17 +23,11 @@ for item in result_list1:
     product_code = item["product_code"]
     key = (store_code, product_code)
     
-    if key in result_list2_dict:
-        # result_list2に一致する商品コードと店舗コードがある場合、他の項目を取得
-        matching_item = result_list2_dict[key]
-        for field, value in matching_item.items():
-            if field not in ["store_code", "product_code"]:
-                item[field] = value
-    else:
-        # 一致する商品コードと店舗コードがない場合、項目を出力し、値を None に設定
-        for field in all_keys:
-            if field not in ["store_code", "product_code"]:
-                item[field] = None
+    matching_item = result_list2_dict.get(key, {})
+    for field in all_keys:
+        if field not in ["store_code", "product_code"]:
+            item[field] = matching_item.get(field, None)
+    
     new_result_list.append(item)
 
 print("New Result List:", new_result_list)
