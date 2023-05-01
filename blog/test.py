@@ -35,7 +35,7 @@ with SSHTunnelForwarder(
 
     conn.close()
     
-    # サンプルデータ1
+# サンプルデータ1
 result_list1 = [
     {"store_code": "S001", "product_code": "P001", "price": 100},
     {"store_code": "S001", "product_code": "P002", "price": 200},
@@ -47,17 +47,21 @@ result_list2 = [
     {"store_code": "S002", "product_code": "P003", "quantity": 300},
 ]
 
-# 商品コードをキーとしてresult_list2のアイテムを格納する辞書を作成
-result_list2_dict = {item["product_code"]: item for item in result_list2}
+# 店舗コードと商品コードをキーとしてresult_list2のアイテムを格納する辞書を作成
+result_list2_dict = {(item["store_code"], item["product_code"]): item for item in result_list2}
 
-# result_list1のアイテムをベースにresult_list2の一致する商品コードから数量を取得
+# result_list1のアイテムをベースにresult_list2の一致する商品コードと店舗コードから数量を取得
 new_result_list = []
 for item in result_list1:
+    store_code = item["store_code"]
     product_code = item["product_code"]
-    if product_code in result_list2_dict:
-        # result_list2に一致する商品コードがある場合、数量を取得
-        item["quantity"] = result_list2_dict[product_code]["quantity"]
+    key = (store_code, product_code)
+    
+    if key in result_list2_dict:
+        # result_list2に一致する商品コードと店舗コードがある場合、数量を取得
+        item["quantity"] = result_list2_dict[key]["quantity"]
     new_result_list.append(item)
 
 print("New Result List:", new_result_list)
+
 
