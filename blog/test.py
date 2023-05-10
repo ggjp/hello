@@ -1,36 +1,27 @@
-# 商品テーブルのデータ
-# 商品コードが1つ目の項目
-data1 = [
-    ['001', '商品A', '詳細A'],
-    ['002', '商品B', '詳細B'],
-    ['003', '商品C', '詳細C']
-]
+# 辞書型のデータ
+dict_data = [{'001': '在庫A', '数量': 100.0, '単価': 50.0}, 
+             {'002': '在庫B', '数量': 200.0, '単価': 60.0}, 
+             {'003': '在庫C', '数量': 300.0, '単価': 70.0}]
 
-# 予定テーブルのデータ
-# 商品コードが2つ目の項目
-data2 = [
-    [10, '001', '注文A'],
-    [20, '002', '注文B'],
-    [30, '003', '注文C']
-]
+# 辞書を展開して、商品コードとそれ以外のデータを分ける
+expanded_data = []
+for d in dict_data:
+    for key, value in d.items():
+        if isinstance(value, str):
+            product_code = key
+            product_name = value
+        else:
+            other_data = {key: value}
+    expanded_data.append({**{'商品コード': product_code, '在庫詳細': product_name}, **other_data})
 
-# 在庫管理テーブルのデータ
-# 商品コードが3つ目の項目
-data3 = [
-    [100, 50, '001', '在庫A'],
-    [200, 60, '002', '在庫B'],
-    [300, 70, '003', '在庫C']
-]
+# DataFrameに変換
+df3 = pd.DataFrame(expanded_data)
 
-# 各リストを辞書に変換（商品コードの項目をキーとして使用）
-dict1 = {d[0]: d[1:] for d in data1}
-dict2 = {d[1]: [d[0]] + d[2:] for d in data2}
-dict3 = {d[2]: d[:2] + d[3:] for d in data3}
+print(df3)
+# df1, df2 の結合
+merged_df = pd.merge(df1, df2, on='商品コード', how='left')
 
-# 商品テーブルの全ての商品コードに対して、予定テーブルと在庫管理テーブルから対応するデータを取得
-result = []
-for key in dict1.keys():
-    merged_data = [key] + dict1.get(key, []) + dict2.get(key, []) + dict3.get(key, [])
-    result.append(merged_data)
+# df3との結合
+final_df = pd.merge(merged_df, df3, on='商品コード', how='left')
 
-print(result)
+print(final_df)
