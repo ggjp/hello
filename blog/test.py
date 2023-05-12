@@ -22,8 +22,8 @@ Sub GetTodaysAppointments()
     ' アイテムを開始時間でソート
     MyItems.Sort "[Start]"
 
-    ' 当日のアイテムをフィルタリング
-    strRestrict = "[Start] >= '" & Format(Now, "mm/dd/yyyy") & " 12:00 AM' AND [Start] <= '" & Format(Now, "mm/dd/yyyy") & " 11:59 PM'"
+    ' 当日の作業時間内のアイテムをフィルタリング
+    strRestrict = "[Start] >= '" & Format(Now, "mm/dd/yyyy") & " 09:00 AM' AND [End] <= '" & Format(Now, "mm/dd/yyyy") & " 06:00 PM'"
     Set RestrictItems = MyItems.Restrict(strRestrict)
 
     ' アポイントメントをリストに追加
