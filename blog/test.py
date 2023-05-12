@@ -27,7 +27,7 @@ Sub GetTodaysAppointments()
         ' キャンセルされた会議を除外
         If olApt.BusyStatus <> olBusyStatusFree Then
             duration = Format((olApt.End - olApt.Start) * 24 * 60, "0") & " minutes"  ' 所要時間を分単位で計算
-            strList = strList & olApt.Start & " -- " & olApt.Subject & ": " & duration & vbCrLf
+            strList = strList & olApt.Subject & ": " & duration & vbCrLf
         End If
     Next olApt
 
