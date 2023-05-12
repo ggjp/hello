@@ -1,4 +1,4 @@
-Sub GetTodaysAppointments()
+Function GetAppointmentsByDate(inputDate As Date) As String
     Dim olApp As Outlook.Application
     Dim olNS As Outlook.Namespace
     Dim olFolder As Outlook.MAPIFolder
@@ -16,17 +16,11 @@ Sub GetTodaysAppointments()
     ' カレンダーフォルダーを設定
     Set olFolder = olNS.GetDefaultFolder(olFolderCalendar)
 
-    ' 全てのアイテムを取得
-    Set MyItems = olFolder.Items
+    ' 指定した日付のアイテムをフィルタリング
+    strRestrict = "[Start] >= '" & Format(inputDate, "mm/dd/yyyy") & " 09:00 AM' AND [Start] < '" & Format(inputDate + 1, "mm/dd/yyyy") & " 06:00 PM'"
+    Set RestrictItems = olFolder.Items.Restrict(strRestrict)
 
-    ' アイテムを開始時間でソート
-    MyItems.Sort "[Start]"
-
-    ' 当日の作業時間内のアイテムをフィルタリング
-    strRestrict = "[Start] >= '" & Format(Now, "mm/dd/yyyy") & " 09:00 AM' AND [End] <= '" & Format(Now, "mm/dd/yyyy") & " 06:00 PM'"
-    Set RestrictItems = MyItems.Restrict(strRestrict)
-
-    ' アポイントメントをリストに追加
+    ' 作業時間内のアポイントメントをリストに追加
     For Each olApt In RestrictItems
         ' キャンセルされた会議を除外
         If olApt.BusyStatus <> olBusyStatusFree Then
@@ -35,12 +29,17 @@ Sub GetTodaysAppointments()
         End If
     Next olApt
 
-    ' リストを表示
-    MsgBox strList, vbInformation, "本日の予定："
+    ' 結果を戻す
+    GetAppointmentsByDate = strList
 
     ' オブジェクトをクリア
     Set olApt = Nothing
     Set olFolder = Nothing
     Set olNS = Nothing
     Set olApp = Nothing
+End Function
+Sub Test()
+    Dim result As String
+    result = GetAppointmentsByDate(#5/12/2023#) ' 日付を渡します
+    MsgBox result, vbInformation, "予定："
 End Sub
