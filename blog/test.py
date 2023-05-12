@@ -16,7 +16,7 @@ Sub GetTodaysAppointments()
     Set olFolder = olNS.GetDefaultFolder(olFolderCalendar)
 
     ' 当日のアイテムをフィルタリング
-    strRestrict = "[Start] >= '" & Format(Now, "mm/dd/yyyy") & "' AND [End] <= '" & Format(Now + 1, "mm/dd/yyyy") & "'"
+    strRestrict = "[Start] >= '" & Format(Now, "mm/dd/yyyy hh:mm AMPM") & "' AND [End] <= '" & Format(Now, "mm/dd/yyyy") & " 11:59 PM'"
     Set RestrictItems = olFolder.Items.Restrict(strRestrict)
 
     ' アイテムを開始時間でソート
