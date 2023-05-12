@@ -4,9 +4,9 @@ Sub GetTodaysAppointments()
     Dim olFolder As Outlook.MAPIFolder
     Dim olApt As Object
     Dim strList As String
-    Dim MyItems As Outlook.Items
     Dim RestrictItems As Outlook.Items
     Dim strRestrict As String
+    Dim duration As String
 
     ' Outlook セッションを開始
     Set olApp = New Outlook.Application
@@ -16,7 +16,7 @@ Sub GetTodaysAppointments()
     Set olFolder = olNS.GetDefaultFolder(olFolderCalendar)
 
     ' 当日のアイテムをフィルタリング
-    strRestrict = "[Start] >= '" & Format(Now, "mm/dd/yyyy hh:mm AMPM") & "' AND [End] <= '" & Format(Now, "mm/dd/yyyy") & " 11:59 PM'"
+    strRestrict = "[Start] >= '" & Format(Now, "mm/dd/yyyy") & "' AND [End] <= '" & Format(Now + 1, "mm/dd/yyyy") & "'"
     Set RestrictItems = olFolder.Items.Restrict(strRestrict)
 
     ' アイテムを開始時間でソート
@@ -24,7 +24,8 @@ Sub GetTodaysAppointments()
 
     ' アポイントメントをリストに追加
     For Each olApt In RestrictItems
-        strList = strList & olApt.Start & " -- " & olApt.Subject & vbCrLf
+        duration = Format((olApt.End - olApt.Start) * 24 * 60, "0") & " minutes"  ' 所要時間を分単位で計算
+        strList = strList & olApt.Subject & ": " & duration & vbCrLf
     Next olApt
 
     ' リストを表示
