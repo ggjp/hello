@@ -1,27 +1,38 @@
-# 辞書型のデータ
-dict_data = [{'001': '在庫A', '数量': 100.0, '単価': 50.0}, 
-             {'002': '在庫B', '数量': 200.0, '単価': 60.0}, 
-             {'003': '在庫C', '数量': 300.0, '単価': 70.0}]
+Sub GetTodaysAppointments()
+    Dim olApp As Outlook.Application
+    Dim olNS As Outlook.Namespace
+    Dim olFolder As Outlook.MAPIFolder
+    Dim olApt As Object
+    Dim strList As String
+    Dim MyItems As Outlook.Items
+    Dim RestrictItems As Outlook.Items
+    Dim strRestrict As String
 
-# 辞書を展開して、商品コードとそれ以外のデータを分ける
-expanded_data = []
-for d in dict_data:
-    for key, value in d.items():
-        if isinstance(value, str):
-            product_code = key
-            product_name = value
-        else:
-            other_data = {key: value}
-    expanded_data.append({**{'商品コード': product_code, '在庫詳細': product_name}, **other_data})
+    ' Outlook セッションを開始
+    Set olApp = New Outlook.Application
+    Set olNS = olApp.GetNamespace("MAPI")
 
-# DataFrameに変換
-df3 = pd.DataFrame(expanded_data)
+    ' カレンダーフォルダーを設定
+    Set olFolder = olNS.GetDefaultFolder(olFolderCalendar)
 
-print(df3)
-# df1, df2 の結合
-merged_df = pd.merge(df1, df2, on='商品コード', how='left')
+    ' 当日のアイテムをフィルタリング
+    strRestrict = "[Start] >= '" & Format(Now, "mm/dd/yyyy") & "' AND [End] <= '" & Format(Now + 1, "mm/dd/yyyy") & "'"
+    Set RestrictItems = olFolder.Items.Restrict(strRestrict)
 
-# df3との結合
-final_df = pd.merge(merged_df, df3, on='商品コード', how='left')
+    ' アイテムを開始時間でソート
+    RestrictItems.Sort "[Start]"
 
-print(final_df)
+    ' アポイントメントをリストに追加
+    For Each olApt In RestrictItems
+        strList = strList & olApt.Start & " -- " & olApt.Subject & vbCrLf
+    Next olApt
+
+    ' リストを表示
+    MsgBox strList, vbInformation, "本日の予定："
+
+    ' オブジェクトをクリア
+    Set olApt = Nothing
+    Set olFolder = Nothing
+    Set olNS = Nothing
+    Set olApp = Nothing
+End Sub
