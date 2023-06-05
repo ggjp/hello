@@ -1,68 +1,33 @@
-GitHubを使用した開発フローの手順は以下の通りです。
-新しい機能の開発において、`origin`というリモートリポジトリから`develop`ブランチをクローンし、
-新機能の開発のための`feature`ブランチを作成し、そのブランチで開発作業を行い、最終的に`develop`ブランチにマージするという一連の流れを説明しています。
+import pandas as pd
+from openpyxl import load_workbook
+from openpyxl.styles import PatternFill
 
-1. `origin`という名前のリモートリポジトリからクローンを作成します。
-    git clone <リモートリポジトリのURL>
+# データをpandasデータフレームとして設定
+data = [
+    ['value1', 'value2', 'value3', 'value4', 'value5', 'value6', 'value7', 'value8', 'value9', 'value10'],
+    ['value11', 'value12', 'value13', 'value14', 'value15', 'value16', 'value17', 'value18', 'value19', 'value20'],
+    # ...以下、データ繰り返し...
+]
+df = pd.DataFrame(data, columns=['Column1', 'Column2', 'Column3', 'Column4', 'Column5', 'Column6', 'Column7', 'Column8', 'Column9', 'Column10'])
 
-2. 作成したクローンのディレクトリに移動します。
-    cd <リポジトリの名前>
+# Excelに出力
+df.to_excel('output.xlsx', index=False)
 
-3. `develop`ブランチにチェックアウトします。
-    git checkout develop
+# Excelファイルを読み込み、書式設定を行う
+wb = load_workbook('output.xlsx')
+ws = wb.active
 
-4. `develop`ブランチを最新の状態に更新します。
-    git pull origin develop
+# 背景色を設定
+red_fill = PatternFill(start_color='FF0000', end_color='FF0000', fill_type='solid')
+blue_fill = PatternFill(start_color='0000FF', end_color='0000FF', fill_type='solid')
 
-5. 新機能開発のための`feature`ブランチを作成します。
-    git checkout -b feature
+for row in ws.iter_rows(min_row=2, max_row=ws.max_row):  # ヘッダーを除く
+    if row[0].row % 2 == 0:  # 偶数行
+        for cell in row:
+            cell.fill = red_fill
+    else:  # 奇数行
+        for cell in row:
+            cell.fill = blue_fill
 
-6. `feature`ブランチで開発作業を行い、変更をコミットします。
-    git add .
-    git commit -m "新機能を追加"
-
-7. 開発作業が終わったら、変更をリモートリポジトリにプッシュします。
-    git push origin feature
-
-8. GitHubのウェブサイト上で、`feature`ブランチから`develop`ブランチへのプルリクエスト（Pull Request）を作成します。
-    1. GitHubのリポジトリページを開きます。
-    2. 「Pull requests」タブをクリックします。
-    3. 「New pull request」ボタンをクリックします。
-    4. 「base」ドロップダウンメニューで、マージ先のブランチ（この場合は`develop`）を選択します。
-    5. 「compare」ドロップダウンメニューで、マージ元のブランチ（この場合は`feature`）を選択します。
-    6. 変更内容を確認し、問題がなければ「Create pull request」ボタンをクリックします。
-    7. プルリクエストのタイトルと説明を記入し、再度「Create pull request」ボタンをクリックします。
-
-9. プルリクエストが他の開発者によってレビューされ、承認されるのを待ちます（続き）。
-    3. プルリクエストの内容を確認します。これには、変更されたファイルの内容、提出者の説明、任意のコメントなどが含まれます。
-    4. 問題がなければ、「Review changes」ボタンをクリックし、「Approve」を選択します。
-    5. 必要に応じてコメントを追加し、「Submit review」ボタンをクリックします。
-
-10. プルリクエストが承認されたら、GitHubのウェブサイト上でプルリクエストを`develop`ブランチにマージします。
-    1. 承認されたプルリクエストのページを開きます。
-    2. 「Merge pull request」ボタンをクリックします。
-    3. マージコミットメッセージを確認（または編集）し、「Confirm merge」ボタンをクリックします。
-
-11. マージが完了したら、ローカルの`develop`ブランチを最新の状態に更新します。
-    git checkout develop
-    git pull origin develop
-
-
-
-import datetime
-from dateutil.relativedelta import relativedelta, MO
-
-# 開始日付を設定します。例：2023年5月14日
-start_date = datetime.date(2023, 5, 14)
-
-mondays = []
-for i in range(10):
-    # 開始日からi週間後の月曜日を取得します
-    monday = start_date + relativedelta(weeks=+i, weekday=MO(1))
-    mondays.append(monday)
-
-# 結果を出力します
-for monday in mondays:
-    print(monday)
-
-pip install python-dateutil
+# 変更を保存
+wb.save('output_styled.xlsx')
