@@ -1,9 +1,16 @@
+<http:listener config-ref="HTTP_Listener_config" path="/yourApiPath" allowedMethods="POST" doc:name="HTTP Listener" />
+<set-variable variableName="tenpo_cd" value="#[payload.tenpo_cd]" doc:name="Set Variable (tenpo_cd)" />
+<set-variable variableName="prd_cds" value="#[payload.prd_cds]" doc:name="Set Variable (prd_cds)" />
+<ee:transform doc:name="Prepare Query" >
+    <ee:message >
+        <ee:set-payload ><![CDATA[%dw 2.0
+            output application/java
+            ---
+            "SELECT * FROM tableName WHERE tenpo_cd = '" ++ vars.tenpo_cd ++ "' AND prd_cd IN (" ++ vars.prd_cds joinBy "," ++ ")" ]]>
+        </ee:set-payload>
+    </ee:message>
+</ee:transform>
 
-<flow name="database-query-flow">
-    <set-variable variableName="tenpo_cd" value="#[attributes.queryParams.tenpo_cd]" doc:name="Set Variable" />
-    <set-variable variableName="prd_cds" value="#[attributes.queryParams.prd_cds]" doc:name="Set Variable" />
-    <db:select doc:name="Run Query" config-ref="Database_Config">
-        <db:sql>SELECT * FROM tableName WHERE storeColumn = :tenpo_cd AND productColumn IN (:prd_cds)</db:sql>
-        <db:input-parameters>#[{ 'tenpo_cd' : vars.tenpo_cd, 'prd_cds' : vars.prd_cds }]</db:input-parameters>
-    </db:select>
-</flow>
+<db:select doc:name="Run Query" config-ref="Database_Config">
+    <db:sql>#[payload]</db:sql>
+</db:select>
