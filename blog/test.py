@@ -2,7 +2,7 @@
     <ee:message>
         <ee:set-payload>
             #[%
-                'SELECT * FROM products WHERE tenpo_cd = \'' ++ payload.tenpo_cd ++ '\' AND product_code IN (' ++ (payload.prd_cd map '\'' ++ $ ++ '\'' joinBy ',') ++ ')'
+                "SELECT * FROM products WHERE tenpo_cd = '" ++ payload.tenpo_cd ++ "' AND product_code IN (" ++ (payload.prd_cd map "'" ++ $ ++ "'" joinBy ',') ++ ")"
             %]
         </ee:set-payload>
     </ee:message>
