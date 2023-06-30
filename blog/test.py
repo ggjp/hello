@@ -1,12 +1,14 @@
 <ee:transform doc:name="Transform Message" >
     <ee:message>
-        <ee:set-payload><![CDATA[%dw 2.0
+        <ee:set-payload><![CDATA[
+            %dw 2.0
             output application/java
             ---
             {
-                'tenpo_cd': '\'' ++ payload.tenpo_cd ++ '\'',
-                'prd_cd': payload.prd_cd map '\'' ++ $ ++ '\'' joinBy ','
-            }]]></ee:set-payload>
+                'tenpo_cd': payload.tenpo_cd,
+                'prd_cd': payload.prd_cd map (product_code) -> '\'' ++ product_code ++ '\'' joinBy ','
+            }
+        ]]></ee:set-payload>
     </ee:message>
 </ee:transform>
 
