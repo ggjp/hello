@@ -26,6 +26,12 @@ output application/java
             ]]></db:sql>
             <db:input-parameters>
                 <db:input-parameter key="tenpo_cd" value="#[payload.tenpo_cd]" />
+                <ee:for-each collection="#[payload.prd_cd]">
+                    <ee:object>
+                        <ee:field name="value" value="#[payload]" />
+                        <ee:field name="type" value="VARCHAR" />
+                    </ee:object>
+                </ee:for-each>
             </db:input-parameters>
         </db:select>
     </flow>
