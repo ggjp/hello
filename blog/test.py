@@ -19,18 +19,13 @@ output application/java
 }]]></ee:set-payload>
             </ee:message>
         </ee:transform>
-        <set-variable variableName="placeholders" value="#[payload.prd_cd map ((item, index) -> ':prd_cd' ++ (index + 1))]" doc:name="Set Placeholders"/>
+        <set-variable variableName="placeholders" value="#[payload.prd_cd joinBy ',']" doc:name="Set Placeholders"/>
         <db:select doc:name="Select" config-ref="Database_Config">
             <db:sql><![CDATA[
-                SELECT * FROM products WHERE tenpo_cd = :tenpo_cd AND product_code IN (:#{vars.placeholders})
+                SELECT * FROM products WHERE tenpo_cd = :tenpo_cd AND product_code IN (:#[vars.placeholders])
             ]]></db:sql>
             <db:input-parameters>
-                <db:foreach config-ref="Database_Config" collection="#[payload.prd_cd]">
-                    <ee:object>
-                        <ee:field name="value" value="#[payload]" />
-                        <ee:field name="type" value="VARCHAR" />
-                    </ee:object>
-                </db:foreach>
+                <db:input-parameter key="tenpo_cd" value="#[payload.tenpo_cd]" />
             </db:input-parameters>
         </db:select>
     </flow>
