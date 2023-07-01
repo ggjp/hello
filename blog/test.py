@@ -25,11 +25,9 @@ output application/java
                 SELECT * FROM products WHERE tenpo_cd = :tenpo_cd AND product_code IN (:prd_cd)
             ]]></db:sql>
             <db:input-parameters>
-                <db:input-parameter key="tenpo_cd" value="#[payload.tenpo_cd]" />
+                <db:input-parameter key="tenpo_cd" value="#[payload.tenpo_cd]" type="VARCHAR"/>
                 <db:foreach config-ref="Database_Config" collection="#[payload.prd_cd]">
-                    <db:dynamic-input-parameter>
-                        <ee:expression><![CDATA[#[payload]]]></ee:expression>
-                    </db:dynamic-input-parameter>
+                    <db:input-parameter value="#[payload]" type="VARCHAR"/>
                 </db:foreach>
             </db:input-parameters>
         </db:select>
