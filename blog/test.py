@@ -22,12 +22,14 @@ output application/java
         <set-variable variableName="placeholders" value="#[payload.prd_cd map ((item, index) -> ':prd_cd' ++ (index + 1))]" doc:name="Set Placeholders"/>
         <db:select doc:name="Select" config-ref="Database_Config">
             <db:sql><![CDATA[
-                SELECT * FROM products WHERE tenpo_cd = :tenpo_cd AND product_code IN (:prd_cd)
+                SELECT * FROM products WHERE tenpo_cd = :tenpo_cd AND product_code IN (:#{vars.placeholders})
             ]]></db:sql>
             <db:input-parameters>
-                <db:input-parameter key="tenpo_cd" value="#[payload.tenpo_cd]" type="VARCHAR"/>
                 <db:foreach config-ref="Database_Config" collection="#[payload.prd_cd]">
-                    <db:input-parameter value="#[payload]" type="VARCHAR"/>
+                    <ee:object>
+                        <ee:field name="value" value="#[payload]" />
+                        <ee:field name="type" value="VARCHAR" />
+                    </ee:object>
                 </db:foreach>
             </db:input-parameters>
         </db:select>
