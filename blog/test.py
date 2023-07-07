@@ -1,18 +1,5 @@
-import requests
+# 各行に対して、最初の列はそのまま、それ以外の列を文字列に変換
+new_results = [[row[0]] + [str(item) for item in row[1:]] for row in results]
 
-# 配列データ
-data = [...] # ここにあなたのデータが入ります
-
-# データを500件ずつに分割
-chunks = [data[x:x+500] for x in range(0, len(data), 500)]
-
-# 結果を保存するためのリスト
-results = []
-
-# 各チャンクでAPIを呼び出す
-for chunk in chunks:
-    response = requests.post('http://your-api-url.com', json=chunk)
-    if response.status_code == 200:
-        results.extend(response.json())
-    else:
-        print(f"Error: {response.status_code}")
+for row in new_results:
+    print(row)
